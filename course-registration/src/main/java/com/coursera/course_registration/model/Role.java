@@ -1,4 +1,8 @@
 package com.coursera.course_registration.model;
 
-public class Role {
+public enum Role {
+
+    STUDENT,
+    TEACHER,
+    ADMIN
 }

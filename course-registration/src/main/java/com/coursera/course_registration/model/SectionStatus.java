@@ -1,6 +1,6 @@
 package com.coursera.course_registration.model;
 
-public enum Status {
+public enum SectionStatus {
     OPEN,
     FULL,
     CANCELLED,
