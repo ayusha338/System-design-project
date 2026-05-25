@@ -1,6 +1,9 @@
 package com.coursera.course_registration.service.impl;
 
 import com.coursera.course_registration.dto.EnrollmentResponse;
+import com.coursera.course_registration.kafka.events.EnrollmentCreatedEvent;
+import com.coursera.course_registration.kafka.events.SeatAvailableEvent;
+import com.coursera.course_registration.kafka.producer.EnrollmentEventProducer;
 import com.coursera.course_registration.model.*;
 import com.coursera.course_registration.repository.EnrollmentRepository;
 import com.coursera.course_registration.repository.SectionRepository;
@@ -23,6 +26,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final SectionRepository sectionRepository;
     private final UserRepository userRepository;
     private final WaitListRepository waitListRepository;
+    private final EnrollmentEventProducer enrollmentEventProducer;
 
     @Transactional
     @Override
@@ -43,6 +47,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .build();
         section.incrementEnrolledCount();
         enrollmentRepository.save(enrollment);
+        enrollmentEventProducer.publishEnrollmentCreated(
+                EnrollmentCreatedEvent.builder()
+                        .enrollmentId(enrollment.getId())
+                        .studentId(enrollment.getStudent().getId())
+                        .studentEmail(enrollment.getStudent().getEmail())
+                        .sectionId(enrollment.getSection().getId())
+                        .enrolledAt(LocalDateTime.now())
+                        .build()
+        );
         sectionRepository.save(section);
 
         return EnrollmentResponse.builder()
@@ -81,6 +94,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollmentRepository.save(enrollment);
         section.decrementEnrolledCount();
         sectionRepository.save(section);
+        enrollmentEventProducer.publishSeatAvailable(
+                SeatAvailableEvent.builder()
+                        .sectionId(sectionId)
+                        .availableSeats(section.getCapacity() - section.getEnrolledCount())
+                        .releasedAt(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @Override
