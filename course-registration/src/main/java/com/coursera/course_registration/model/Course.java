@@ -29,6 +29,22 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /**
+     Aggregation vs Composition:
+     Composition — strong bond ("part of")
+     Course → Sections
+     "Agar Course delete ho → Sections bhi delete ho jaayein"
+     Section ka Course ke bina koi existence nahi ✅
+     → CascadeType.ALL lagaya humne
+     Aggregation — loose bond ("has a")
+     Course → Teacher
+     "Agar Course delete ho → Teacher delete nahi hoga"
+     Teacher ka Course ke bina bhi existence hai ✅
+     → Sirf @ManyToOne lagaya, koi cascade nahi
+     MAny to One :
+     Ek Teacher → Multiple Courses padha sakta hai
+     Ek Course  → Sirf ek Teacher hota hai
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
@@ -36,6 +52,7 @@ public class Course {
     // A course can have multiple sections
     //
 // ✅ Sahi — Section.java mein field ka naam "course" hoga
+
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Section> sections = new ArrayList<>();

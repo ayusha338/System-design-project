@@ -19,6 +19,7 @@ public class Section {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
+    // There can be multiple sections for One Course
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="course_id", nullable = false)
     private Course course;
