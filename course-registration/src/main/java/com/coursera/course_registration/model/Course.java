@@ -52,7 +52,12 @@ public class Course {
     // A course can have multiple sections
     //
 // ✅ Sahi — Section.java mein field ka naam "course" hoga
-
+/*
+    CascadeType.ALL isliye ki section ka Course ke bina existence nahi —
+    composition relationship hai.
+    LAZY fetch isliye ki N+1 problem avoid ho.
+    @Builder.Default isliye ki empty list mile null nahi."
+* */
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Section> sections = new ArrayList<>();

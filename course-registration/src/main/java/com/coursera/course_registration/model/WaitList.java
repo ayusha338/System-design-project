@@ -46,7 +46,6 @@ public class WaitList {
     * */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false)
-    @JoinColumn(name = "section_id", nullable = false)
     private Section section;
 
     @Column(nullable = false)
