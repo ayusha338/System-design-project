@@ -1,6 +1,10 @@
 package com.coursera.course_registration.service.impl;
 
 import com.coursera.course_registration.dto.EnrollmentResponse;
+import com.coursera.course_registration.exception.AlreadyEnrolledException;
+import com.coursera.course_registration.exception.EnrollmentNotFoundException;
+import com.coursera.course_registration.exception.SectionNotFoundException;
+import com.coursera.course_registration.exception.StudentNotFoundException;
 import com.coursera.course_registration.kafka.events.EnrollmentCreatedEvent;
 import com.coursera.course_registration.kafka.events.SeatAvailableEvent;
 import com.coursera.course_registration.kafka.producer.EnrollmentEventProducer;
@@ -14,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.rmi.AlreadyBoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -32,13 +37,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public EnrollmentResponse enrollStudent(UUID studentId, UUID sectionId) {
     if(enrollmentRepository.existsByStudent_IdAndSection_Id(studentId, sectionId)){
-        throw new RuntimeException("Student already enrolled!");
+        throw new AlreadyEnrolledException("Student already enrolled!");
     }
     User student = userRepository.findById(studentId)
-            .orElseThrow(()-> new RuntimeException("Student not found!"));
+            .orElseThrow(()-> new StudentNotFoundException("Student not found!"));
 
     Section section = sectionRepository.findByIdWithLock(sectionId)
-            .orElseThrow(()-> new RuntimeException("Section not found!"));
+            .orElseThrow(()-> new SectionNotFoundException("Section not found!"));
     if(section.hasAvailableSeat()) {
         Enrollment enrollment = Enrollment.builder()
                 .student(student)
@@ -85,9 +90,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public void dropEnrollment(UUID studentId, UUID sectionId) {
         Enrollment enrollment = enrollmentRepository.findByStudent_IdAndSection_Id(studentId, sectionId)
-                .orElseThrow(()-> new RuntimeException("Enrollment not found!"));
+                .orElseThrow(()-> new EnrollmentNotFoundException("Enrollment not found!"));
             Section section = sectionRepository.findByIdWithLock(sectionId)
-                    .orElseThrow(()-> new RuntimeException("Section not found!"));
+                    .orElseThrow(()-> new SectionNotFoundException("Section not found!"));
 
             enrollment.setStatus(EnrollmentStatus.DROPPED);
             enrollment.setDroppedAt(LocalDateTime.now());
