@@ -1,3 +1,9 @@
+logging:
+  level:
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR
+    kafka: ERROR
+
 spring:
   application:
     name: course-registration
