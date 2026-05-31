@@ -27,4 +27,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handle(EnrollmentNotFoundException  ex){
         return ResponseEntity.status(404).body(ex.getMessage());
     }
+
+    @ExceptionHandler(TeacherNotFoundException .class)
+    public ResponseEntity<?> handle(TeacherNotFoundException  ex){
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CourseNotFoundException .class)
+    public ResponseEntity<?> handle(CourseNotFoundException  ex){
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
 }
