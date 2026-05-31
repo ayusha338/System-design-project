@@ -3,6 +3,7 @@ package com.coursera.course_registration.Controller;
 import com.coursera.course_registration.dto.CourseRequest;
 import com.coursera.course_registration.dto.CourseResponse;
 import com.coursera.course_registration.dto.SectionRequest;
+import com.coursera.course_registration.dto.SectionResponse;
 import com.coursera.course_registration.model.Course;
 import com.coursera.course_registration.model.Section;
 import com.coursera.course_registration.service.CourseService;
@@ -83,11 +84,18 @@ public class CourseController {
 
 
     @PostMapping("/{courseId}/sections")
-    public ResponseEntity<Section> addSection(@PathVariable UUID courseId, @RequestBody SectionRequest sectionRequest){
+    public ResponseEntity<SectionResponse> addSection(@PathVariable UUID courseId, @RequestBody SectionRequest sectionRequest){
         Section section =  courseService.addSection(courseId,sectionRequest);
+        SectionResponse sectionResponse = SectionResponse.builder()
+                .id(section.getId())
+                .capacity(section.getCapacity())
+                .enrolledCount(section.getEnrolledCount())
+                .schedule(section.getSchedule())
+                .room(section.getRoom())
+                .build();
         return ResponseEntity
                 .status(HttpStatus.CREATED)  // 201
-                .body(section);
+                .body(sectionResponse);
     }
 
 

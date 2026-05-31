@@ -8,6 +8,10 @@ spring:
   application:
     name: course-registration
 
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
   datasource:
     url: jdbc:mysql://localhost:3307/course_registration?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: courseapp
